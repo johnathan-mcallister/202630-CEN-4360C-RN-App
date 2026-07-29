@@ -1,12 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
 } from "react-native";
 
 import { Screen } from "@/src/components/layout/Screen";
@@ -17,6 +18,7 @@ import { useAppTheme } from "@/src/theme/useAppTheme";
 
 export function SignInRoute() {
   const theme = useAppTheme();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [secure, setSecure] = useState(true);
@@ -29,7 +31,7 @@ export function SignInRoute() {
     if (password.length < 6)
       return setError("Password must be at least 6 characters.");
     setError("");
-    console.log(cleanEmail);
+    router.replace("/dashboard");
   };
 
   return (
