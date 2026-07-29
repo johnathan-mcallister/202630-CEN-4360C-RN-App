@@ -18,9 +18,8 @@ function RootNavigator() {
           contentStyle: { backgroundColor: theme.colors.background },
         }}
       >
-        <Stack.Protected guard={true}>
-          <Stack.Screen name="index" />
-        </Stack.Protected>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(main)" />
       </Stack>
       <StatusBar style={theme.statusBarStyle} />
     </>
