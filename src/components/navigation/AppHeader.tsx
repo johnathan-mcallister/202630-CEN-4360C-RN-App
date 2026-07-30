@@ -14,7 +14,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppText } from "@/src/components/ui/AppText";
-import { isAssetStatus } from "@/src/data/assets/asset.model";
+import {
+  isAssetCategory,
+  isAssetStatus,
+} from "@/src/data/assets/asset.model";
 import { useAppTheme } from "@/src/theme/useAppTheme";
 
 export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
@@ -23,7 +26,8 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const { width } = useWindowDimensions();
   const router = useRouter();
   const pathname = usePathname();
-  const { q, status } = useGlobalSearchParams<{
+  const { category, q, status } = useGlobalSearchParams<{
+    category?: string | string[];
     q?: string | string[];
     status?: string | string[];
   }>();
@@ -36,7 +40,11 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const isAssetDetailsRoute = pathname.startsWith("/assets/");
   const routeQuery = Array.isArray(q) ? q[0] : q;
   const rawStatus = Array.isArray(status) ? status[0] : status;
+  const rawCategory = Array.isArray(category) ? category[0] : category;
   const statusFilter = isAssetStatus(rawStatus) ? rawStatus : undefined;
+  const categoryFilter = isAssetCategory(rawCategory)
+    ? rawCategory
+    : undefined;
 
   useEffect(() => {
     setSearch(isAssetsRoute ? (routeQuery ?? "") : "");
@@ -75,6 +83,7 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
       params: {
         ...(routeQuery ? { q: routeQuery } : {}),
         ...(statusFilter ? { status: statusFilter } : {}),
+        ...(categoryFilter ? { category: categoryFilter } : {}),
       },
     });
   };

@@ -1,4 +1,8 @@
-import type { Asset, AssetStatus } from "./asset.model";
+import type {
+  Asset,
+  AssetCategory,
+  AssetStatus,
+} from "./asset.model";
 
 export function findAssetById(
   assets: readonly Asset[],
@@ -19,6 +23,13 @@ export function filterAssetsByLocation(
   locationId: string,
 ): Asset[] {
   return assets.filter((asset) => asset.locationId === locationId);
+}
+
+export function filterAssetsByCategory(
+  assets: readonly Asset[],
+  category: AssetCategory,
+): Asset[] {
+  return assets.filter((asset) => asset.category === category);
 }
 
 export function searchAssets(

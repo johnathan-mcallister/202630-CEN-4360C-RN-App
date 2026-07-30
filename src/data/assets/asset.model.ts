@@ -11,14 +11,17 @@ export type AssetStatus = (typeof assetStatuses)[number];
 
 export type AssetCondition = "new" | "good" | "fair" | "damaged" | "lost";
 
-export type AssetCategory =
-  | "desktop"
-  | "laptop"
-  | "tablet"
-  | "monitor"
-  | "printer"
-  | "network"
-  | "other";
+export const assetCategories = [
+  "desktop",
+  "laptop",
+  "tablet",
+  "monitor",
+  "printer",
+  "network",
+  "other",
+] as const;
+
+export type AssetCategory = (typeof assetCategories)[number];
 
 export type Asset = {
   id: string;
@@ -44,5 +47,12 @@ export function isAssetStatus(value: unknown): value is AssetStatus {
   return (
     typeof value === "string" &&
     assetStatuses.some((status) => status === value)
+  );
+}
+
+export function isAssetCategory(value: unknown): value is AssetCategory {
+  return (
+    typeof value === "string" &&
+    assetCategories.some((category) => category === value)
   );
 }
