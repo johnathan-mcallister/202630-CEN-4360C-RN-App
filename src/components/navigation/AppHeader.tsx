@@ -1,10 +1,7 @@
+import { layout } from "@/src/config/layout";
 import { Ionicons } from "@expo/vector-icons";
 import type { DrawerHeaderProps } from "@react-navigation/drawer";
-import {
-  useGlobalSearchParams,
-  usePathname,
-  useRouter,
-} from "expo-router";
+import { useGlobalSearchParams, usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Platform,
@@ -32,7 +29,8 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   }>();
   const [search, setSearch] = useState("");
 
-  const isWide = width >= 768;
+  const isWide = width >= layout.wideHeaderBreakpoint;
+
   const isAssetsRoute = route.name === "assets";
   const isAssetListRoute = pathname === "/assets";
   const isAssetDetailsRoute = pathname.startsWith("/assets/");
@@ -57,9 +55,7 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
 
     if (!isAssetListRoute) {
       router.push(
-        query
-          ? { pathname: "/assets", params: { q: query } }
-          : "/assets",
+        query ? { pathname: "/assets", params: { q: query } } : "/assets",
       );
     }
   };
@@ -154,9 +150,7 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
         <View style={styles.sideSection}>
           <Pressable
             accessibilityLabel={
-              isAssetDetailsRoute
-                ? "Back to assets"
-                : "Open navigation menu"
+              isAssetDetailsRoute ? "Back to assets" : "Open navigation menu"
             }
             accessibilityRole="button"
             onPress={

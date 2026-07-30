@@ -2,6 +2,7 @@ import { PropsWithChildren } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { layout } from "@/src/config/layout";
 import { useAppTheme } from "@/src/theme/useAppTheme";
 
 type ScreenProps = PropsWithChildren<{
@@ -57,7 +58,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   content: {
+    alignSelf: "center",
     flexGrow: 1,
+    maxWidth: layout.contentMaxWidth,
     width: "100%",
   },
 });
