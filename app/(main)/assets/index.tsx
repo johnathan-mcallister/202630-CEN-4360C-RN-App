@@ -1,4 +1,4 @@
-import { ListScreen } from "@/src/features/home/ListScreen";
+import { ListScreen } from "@/src/features/assets/ListScreen";
 
 export default function AssetListRoute() {
   return <ListScreen />;
