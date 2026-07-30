@@ -11,8 +11,14 @@ import {
 import { Screen } from "@/src/components/layout/Screen";
 import { AppText } from "@/src/components/ui/AppText";
 import { Surface } from "@/src/components/ui/Surface";
-import type { Asset } from "@/src/data/assets/asset.model";
-import { searchAssets } from "@/src/data/assets/asset.queries";
+import {
+  isAssetStatus,
+  type Asset,
+} from "@/src/data/assets/asset.model";
+import {
+  filterAssetsByStatus,
+  searchAssets,
+} from "@/src/data/assets/asset.queries";
 import { mockAssets } from "@/src/data/assets/mockAssets";
 import { findLocationById } from "@/src/data/locations/location.queries";
 import { mockLocations } from "@/src/data/locations/mockLocations";
@@ -21,12 +27,23 @@ import { useAppTheme } from "@/src/theme/useAppTheme";
 export function AssetListScreen() {
   const theme = useAppTheme();
   const router = useRouter();
-  const { q } = useLocalSearchParams<{ q?: string | string[] }>();
+  const { q, status } = useLocalSearchParams<{
+    q?: string | string[];
+    status?: string | string[];
+  }>();
   const query = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
+  const rawStatus = Array.isArray(status) ? status[0] : status;
+  const statusFilter = isAssetStatus(rawStatus) ? rawStatus : undefined;
 
   const assets = useMemo(
-    () => searchAssets(mockAssets, query),
-    [query],
+    () => {
+      const statusAssets = statusFilter
+        ? filterAssetsByStatus(mockAssets, statusFilter)
+        : mockAssets;
+
+      return searchAssets(statusAssets, query);
+    },
+    [query, statusFilter],
   );
 
   const openAsset = (asset: Asset) => {
@@ -35,8 +52,13 @@ export function AssetListScreen() {
       params: {
         assetId: asset.id,
         ...(query ? { q: query } : {}),
+        ...(statusFilter ? { status: statusFilter } : {}),
       },
     });
+  };
+
+  const clearStatusFilter = () => {
+    router.setParams({ status: "" });
   };
 
   return (
@@ -44,10 +66,32 @@ export function AssetListScreen() {
       <View style={styles.intro}>
         <AppText variant="title">Assets</AppText>
         <AppText muted>
-          {query
-            ? `${assets.length} result${assets.length === 1 ? "" : "s"} for “${query}”`
-            : `${assets.length} assets in inventory`}
+          {getResultDescription(assets.length, query, statusFilter)}
         </AppText>
+
+        {statusFilter ? (
+          <Pressable
+            accessibilityLabel={`Clear ${formatStatus(statusFilter)} status filter`}
+            accessibilityRole="button"
+            onPress={clearStatusFilter}
+            style={[
+              styles.filterChip,
+              { backgroundColor: theme.colors.primarySoft },
+            ]}
+          >
+            <AppText
+              variant="caption"
+              style={{ color: theme.colors.primary }}
+            >
+              {formatStatus(statusFilter)}
+            </AppText>
+            <Ionicons
+              name="close"
+              size={16}
+              color={theme.colors.primary}
+            />
+          </Pressable>
+        ) : null}
       </View>
 
       <FlatList
@@ -143,9 +187,41 @@ function formatStatus(status: Asset["status"]) {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
+function getResultDescription(
+  count: number,
+  query: string,
+  status?: Asset["status"],
+) {
+  const noun = `asset${count === 1 ? "" : "s"}`;
+
+  if (query && status) {
+    return `${count} ${formatStatus(status).toLowerCase()} ${noun} matching “${query}”`;
+  }
+
+  if (query) {
+    return `${count} ${noun} matching “${query}”`;
+  }
+
+  if (status) {
+    return `${count} ${formatStatus(status).toLowerCase()} ${noun}`;
+  }
+
+  return `${count} assets in inventory`;
+}
+
 const styles = StyleSheet.create({
   intro: {
+    alignItems: "flex-start",
     gap: 6,
+  },
+  filterChip: {
+    alignItems: "center",
+    borderRadius: 999,
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
   },
   listContent: {
     paddingBottom: 24,

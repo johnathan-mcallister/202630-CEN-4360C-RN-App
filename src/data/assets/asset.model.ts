@@ -1,10 +1,13 @@
-export type AssetStatus =
-  | "pending"
-  | "available"
-  | "assigned"
-  | "maintenance"
-  | "retired"
-  | "decommissioned";
+export const assetStatuses = [
+  "pending",
+  "available",
+  "assigned",
+  "maintenance",
+  "retired",
+  "decommissioned",
+] as const;
+
+export type AssetStatus = (typeof assetStatuses)[number];
 
 export type AssetCondition = "new" | "good" | "fair" | "damaged" | "lost";
 
@@ -36,3 +39,10 @@ export type Asset = {
   createdAt: string;
   updatedAt: string;
 };
+
+export function isAssetStatus(value: unknown): value is AssetStatus {
+  return (
+    typeof value === "string" &&
+    assetStatuses.some((status) => status === value)
+  );
+}
