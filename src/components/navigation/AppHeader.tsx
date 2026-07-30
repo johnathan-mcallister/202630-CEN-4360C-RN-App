@@ -1,6 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { DrawerHeaderProps } from "@react-navigation/drawer";
-import { useState } from "react";
+import {
+  useGlobalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useEffect, useState } from "react";
 import {
     Platform,
     Pressable,
@@ -18,11 +22,41 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const router = useRouter();
+  const { q } = useGlobalSearchParams<{ q?: string | string[] }>();
   const [search, setSearch] = useState("");
 
-  // TODO(feature): Store search in the /assets route query so it survives
-  // navigation, refreshes, and deep links.
   const isWide = width >= 768;
+  const isAssetsRoute = route.name === "assets";
+  const routeQuery = Array.isArray(q) ? q[0] : q;
+
+  useEffect(() => {
+    setSearch(isAssetsRoute ? (routeQuery ?? "") : "");
+  }, [isAssetsRoute, routeQuery]);
+
+  const updateSearch = (value: string) => {
+    setSearch(value);
+
+    if (isAssetsRoute) {
+      router.setParams({ q: value });
+    }
+  };
+
+  const submitSearch = () => {
+    const query = search.trim();
+
+    if (!isAssetsRoute) {
+      router.push(
+        query
+          ? { pathname: "/assets", params: { q: query } }
+          : "/assets",
+      );
+    }
+  };
+
+  const clearSearch = () => {
+    updateSearch("");
+  };
 
   const title =
     typeof options.title === "string"
@@ -48,7 +82,8 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
         accessibilityLabel="Search assets"
         autoCapitalize="none"
         autoCorrect={false}
-        onChangeText={setSearch}
+        onChangeText={updateSearch}
+        onSubmitEditing={submitSearch}
         placeholder="Search assets"
         placeholderTextColor={theme.colors.textSoft}
         returnKeyType="search"
@@ -66,7 +101,7 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
           accessibilityLabel="Clear search"
           accessibilityRole="button"
           hitSlop={8}
-          onPress={() => setSearch("")}
+          onPress={clearSearch}
         >
           <Ionicons
             name="close-circle"
