@@ -3,11 +3,11 @@ import { View } from "react-native";
 import { Screen } from "@/src/components/layout/Screen";
 import { AppText } from "@/src/components/ui/AppText";
 
-type DetailsScreenProps = {
+type AssetDetailsScreenProps = {
   assetId: string;
 };
 
-export function DetailsScreen({ assetId }: DetailsScreenProps) {
+export function AssetDetailsScreen({ assetId }: AssetDetailsScreenProps) {
   return (
     <Screen>
       <View>
