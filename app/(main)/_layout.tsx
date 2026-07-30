@@ -1,3 +1,4 @@
+import { AppHeader } from "@/src/components/navigation/AppHeader";
 import { useAppTheme } from "@/src/theme/useAppTheme";
 import { Drawer } from "expo-router/drawer";
 
@@ -13,10 +14,7 @@ export default function AppDrawerLayout() {
         drawerStyle: {
           backgroundColor: theme.colors.surface,
         },
-        headerStyle: {
-          backgroundColor: theme.colors.surface,
-        },
-        headerTintColor: theme.colors.text,
+        header: (props) => <AppHeader {...props} />,
         sceneStyle: {
           backgroundColor: theme.colors.background,
         },
