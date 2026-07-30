@@ -1,11 +1,11 @@
 import { useLocalSearchParams } from "expo-router";
 
-import { DetailsScreen } from "@/src/features/assets/DetailsScreen";
+import { AssetDetailsScreen } from "@/src/features/assets/AssetDetailsScreen";
 
 export default function AssetDetailsRoute() {
   const { assetId } = useLocalSearchParams<{
     assetId: string;
   }>();
 
-  return <DetailsScreen assetId={assetId} />;
+  return <AssetDetailsScreen assetId={assetId} />;
 }

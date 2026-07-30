@@ -10,6 +10,8 @@ import {
 function RootNavigator() {
   const { theme } = useThemeController();
 
+  // TODO(security): Gate the (main) group with session-backed protected routes.
+  // Client route guards improve UX; the API must still authorize every request.
   return (
     <>
       <Stack

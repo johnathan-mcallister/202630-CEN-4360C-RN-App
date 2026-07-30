@@ -1,5 +1,5 @@
-import { SignInRoute } from "@/src/features/home/LoginScreen";
+import { LoginScreen } from "@/src/features/auth/LoginScreen";
 
-export default function HomeScreen() {
-  return <SignInRoute />;
+export default function IndexRoute() {
+  return <LoginScreen />;
 }
