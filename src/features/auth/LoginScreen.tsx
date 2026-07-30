@@ -16,7 +16,7 @@ import { AppText } from "@/src/components/ui/AppText";
 import { Surface } from "@/src/components/ui/Surface";
 import { useAppTheme } from "@/src/theme/useAppTheme";
 
-export function SignInRoute() {
+export function LoginScreen() {
   const theme = useAppTheme();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -31,6 +31,9 @@ export function SignInRoute() {
     if (password.length < 6)
       return setError("Password must be at least 6 characters.");
     setError("");
+
+    // TODO(security): Replace demo validation with server-backed authentication.
+    // Never log, persist, or place raw passwords in route parameters or client storage.
     router.replace("/dashboard");
   };
 

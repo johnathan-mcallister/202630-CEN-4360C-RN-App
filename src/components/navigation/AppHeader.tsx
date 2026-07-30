@@ -20,6 +20,8 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const { width } = useWindowDimensions();
   const [search, setSearch] = useState("");
 
+  // TODO(feature): Store search in the /assets route query so it survives
+  // navigation, refreshes, and deep links.
   const isWide = width >= 768;
 
   const title =
@@ -115,6 +117,8 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
         ) : null}
 
         <View style={[styles.sideSection, styles.rightSection]}>
+          {/* TODO(feature): Replace with an accessible profile menu after
+              authenticated user data and sign-out behavior exist. */}
           <View
             accessibilityLabel="User profile"
             accessibilityRole="image"
