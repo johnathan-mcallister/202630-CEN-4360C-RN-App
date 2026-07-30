@@ -2,16 +2,17 @@ import { Ionicons } from "@expo/vector-icons";
 import type { DrawerHeaderProps } from "@react-navigation/drawer";
 import {
   useGlobalSearchParams,
+  usePathname,
   useRouter,
 } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Platform,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    useWindowDimensions,
-    View,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  useWindowDimensions,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,11 +24,14 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const router = useRouter();
+  const pathname = usePathname();
   const { q } = useGlobalSearchParams<{ q?: string | string[] }>();
   const [search, setSearch] = useState("");
 
   const isWide = width >= 768;
   const isAssetsRoute = route.name === "assets";
+  const isAssetListRoute = pathname === "/assets";
+  const isAssetDetailsRoute = pathname.startsWith("/assets/");
   const routeQuery = Array.isArray(q) ? q[0] : q;
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const updateSearch = (value: string) => {
     setSearch(value);
 
-    if (isAssetsRoute) {
+    if (isAssetListRoute) {
       router.setParams({ q: value });
     }
   };
@@ -45,7 +49,7 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
   const submitSearch = () => {
     const query = search.trim();
 
-    if (!isAssetsRoute) {
+    if (!isAssetListRoute) {
       router.push(
         query
           ? { pathname: "/assets", params: { q: query } }
@@ -58,8 +62,22 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
     updateSearch("");
   };
 
-  const title =
-    typeof options.title === "string"
+  const navigateBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(
+      routeQuery
+        ? { pathname: "/assets", params: { q: routeQuery } }
+        : "/assets",
+    );
+  };
+
+  const title = isAssetDetailsRoute
+    ? "Asset Details"
+    : typeof options.title === "string"
       ? options.title
       : route.name === "dashboard"
         ? "Dashboard"
@@ -127,9 +145,17 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
       <View style={styles.topRow}>
         <View style={styles.sideSection}>
           <Pressable
-            accessibilityLabel="Open navigation menu"
+            accessibilityLabel={
+              isAssetDetailsRoute
+                ? "Back to assets"
+                : "Open navigation menu"
+            }
             accessibilityRole="button"
-            onPress={() => navigation.toggleDrawer()}
+            onPress={
+              isAssetDetailsRoute
+                ? navigateBack
+                : () => navigation.toggleDrawer()
+            }
             style={({ pressed }) => [
               styles.iconButton,
               {
@@ -139,7 +165,11 @@ export function AppHeader({ navigation, options, route }: DrawerHeaderProps) {
               },
             ]}
           >
-            <Ionicons name="menu" size={26} color={theme.colors.text} />
+            <Ionicons
+              name={isAssetDetailsRoute ? "arrow-back" : "menu"}
+              size={26}
+              color={theme.colors.text}
+            />
           </Pressable>
 
           <AppText numberOfLines={1} variant="subtitle" style={styles.title}>
